@@ -28,6 +28,18 @@ var myApp = new Frontier.Application(options);
 ## API Methods
 The Frontier API gives you a number of tools for managing your application's users - you can read the [documentation](http://auth.sierrasoftworks.com/api) for more information. This module provides a lightweight wrapper around the API with automatic response caching in line with the server's response *X-Expires* field.
 
+### Login
+If you're implementing an application which is unable to redirect the user to the Frontier login page (the preferred method of authentication) then you can use the login API to acquire a session key for the user. Take note that this will **only** allow users who have previously authorized your application to login, other users will return a **404 Not Found** error (the same as for invalid usernames).
+
+```javascript
+myApp.api.login(username, password, deviceName, function(err, response) {
+	response = {
+		sessionkey: 'xxxxxxxxxxx',
+		expires: new Date(1234567890)
+	}
+});
+```
+
 ### Permissions
 The permissions API allows you to easily access, assign, grant and revoke permissions for specific users - or groups of tagged users. The `query` parameter can either be a username or a tag query.
 
@@ -76,7 +88,7 @@ The `req.authorization` object will look something like this.
 req.authorization = {
 	user: 'username',
 	sessionkey: 'xxxxxxxxxxxxxxx',
-	expires: new Date(12345678)
+	expires: new Date(1234567890)
 }
 ```
 
