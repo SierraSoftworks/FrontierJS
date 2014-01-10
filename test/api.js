@@ -73,7 +73,6 @@ describe('sessions', function() {
 	describe('close', function(done) {
 		it('should close a session', function(done) {
 			app.api.session.close(session, function(err, res) {
-				console.log(res.statusCode);
 				should.not.exist(err);
 
 				app.api.session.check(session, function(err, valid) {
