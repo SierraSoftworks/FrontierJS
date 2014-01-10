@@ -1,4 +1,4 @@
-# Frontier JavaScript Client
+# Frontier JavaScript Client [![Build Status](https://travis-ci.org/SierraSoftworks/FrontierJS.png?branch=master)](https://travis-ci.org/SierraSoftworks/FrontierJS) [![](https://badge.fury.io/js/frontier-client.png)](https://npmjs.org/package/frontier-client)
 **Include Frontier Authentication Support In Your Application**
 
 This module makes it trivial to include Frontier authentication support in your next application, with an easy to use API wrapper which automatically signs requests and validates and caches responses according to the server's preferences.
