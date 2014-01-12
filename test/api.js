@@ -11,6 +11,7 @@ var app = new Frontier.Application({
 var session = null;
 
 describe('login', function() {
+	this.timeout(5000);
 	it('should respond with a 203 for an invalid username', function(done) {
 		app.api.login('invalidUsername', 'somePassword', 'Mocha Test', function(err, response) {
 			should.exist(err);
@@ -40,6 +41,7 @@ describe('login', function() {
 });
 
 describe('sessions', function() {
+	this.timeout(5000);
 	describe('check', function(done) {		
 		it('should respond with false for an invalid session key', function(done) {
 			app.api.session.check(session.substring(1) + 'a', function(err, valid) {
@@ -81,6 +83,41 @@ describe('sessions', function() {
 					done();
 				});
 			});
+		});
+	});
+});
+
+describe('tags', function() {
+	this.timeout(5000);
+	it('assignment should return the new tags', function(done) {
+		app.api.tags.assign('test_runner', ['mocha', 'nodejs'], function(err, tags) {
+			should.not.exist(err);
+			tags.should.eql(['mocha', 'nodejs']);
+			done();
+		});
+	});
+
+	it('get should return the user\'s tags', function(done) {
+		app.api.tags.get('test_runner', function(err, tags) {
+			should.not.exist(err);
+			tags.should.eql(['mocha', 'nodejs']);
+			done();
+		});
+	});
+
+	it('addition should not add duplicate tags', function(done) {
+		app.api.tags.add('test_runner', ['nodejs', 'frontierjs'], function(err, tags) {
+			should.not.exist(err);
+			tags.should.eql(['mocha', 'nodejs', 'frontierjs']);
+			done();
+		});
+	});
+
+	it('remove should remove only matched tags', function(done) {
+		app.api.tags.remove('test_runner', 'mocha', function(err, tags) {
+			should.not.exist(err);
+			tags.should.eql(['nodejs', 'frontierjs']);
+			done();
 		});
 	});
 });

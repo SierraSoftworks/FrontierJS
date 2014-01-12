@@ -13,7 +13,8 @@
 	"dependencies": {
 		"lodash": "*",
 		"guardhouse": "*",
-		"superagent": "*"
+		"superagent": "*",
+		"debug": "*"
 	},
 	"devDependencies": {
 		"mocha": "*",
