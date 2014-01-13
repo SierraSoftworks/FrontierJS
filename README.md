@@ -95,7 +95,7 @@ RedisStore.prototype.set = function(key, expiry, value, callback) {
 	var ttl = (new Date()).getTime() - expiry.getTime();
 	this.client.psetex(this.prefix + key, ttl, value, function(err) {
 		if(err) debug('SETEX %s FAILED (%s)', key, err.message);
-		return callback();
+		return callback(err);
 	});
 };
 
@@ -103,17 +103,17 @@ RedisStore.prototype.get = function(key, callback) {
 	this.client.get(this.prefix + key, function(err, value) {
 		if(err) {
 			debug('GET %s FAILED (%s)', key, err.message);
-			return callback();
+			return callback(err);
 		}
 
-		return callback(value);
+		return callback(err, value);
 	});
 };
 
 RedisStore.prototype.remove = function(key, callback) {
 	this.client.del(this.prefix + key, function(err) {
 		if(err) debug('DEL %s FAILED (%s)', key, err.message);
-		return callback();
+		return callback(err);
 	});
 };
 ```
