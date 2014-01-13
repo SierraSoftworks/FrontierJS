@@ -1,6 +1,6 @@
 {
 	"name": "frontier-client",
-	"version": "1.1.4",
+	"version": "1.2.0",
 	"description": "A Frontier authentication client for JavaScript applications",
 	"author": "Benjamin Pannell <admin@sierrasoftworks.com>",
 	"website": "http://auth.sierrasoftworks.com",
