@@ -93,7 +93,7 @@ function RedisStore(options) {
 
 RedisStore.prototype.set = function(key, expiry, value, callback) {
 	var ttl = (new Date()).getTime() - expiry.getTime();
-	this.client.setex(this.prefix + key, ttl / 1000, value, function(err) {
+	this.client.psetex(this.prefix + key, ttl, value, function(err) {
 		if(err) debug('SETEX %s FAILED (%s)', key, err.message);
 		return callback();
 	});
