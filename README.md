@@ -76,6 +76,48 @@ You can use the details API to quickly get a small amount of information about a
 myApp.api.details.get(username, function(err, details) {});
 ```
 
+## Response Caching
+To help improve performance of your application, Frontier allows you to cache responses from its API for a small period of time. This module includes support for caching out of the box, but the default cache store is an in-memory cache. While this is sufficient for testing, we recommend using something like Redis for production environments.
+
+This is an example of a Redis cache store which you could use as a drop in replacement for the default MemoryStore.
+
+```javascript
+var redis = require('redis'),
+	debug = require('debug')('frontier:cache:redis');
+
+module.exports = RedisStore;
+function RedisStore(options) {
+	this.client = redis.createClient(options.port, options.host);
+	this.prefix = options.prefix;
+}
+
+RedisStore.prototype.set = function(key, expiry, value, callback) {
+	var ttl = (new Date()).getTime() - expiry.getTime();
+	this.client.setex(this.prefix + key, ttl / 1000, value, function(err) {
+		if(err) debug('SETEX %s FAILED (%s)', key, err.message);
+		return callback();
+	});
+};
+
+RedisStore.prototype.get = function(key, callback) {
+	this.client.get(this.prefix + key, function(err, value) {
+		if(err) {
+			debug('GET %s FAILED (%s)', key, err.message);
+			return callback();
+		}
+
+		return callback(value);
+	});
+};
+
+RedisStore.prototype.remove = function(key, callback) {
+	this.client.del(this.prefix + key, function(err) {
+		if(err) debug('DEL %s FAILED (%s)', key, err.message);
+		return callback();
+	});
+};
+```
+
 ## Express Middleware
 This module includes two express middlewares which are designed to be used together when implementing Frontier authentication in your application. They are the `Authentication Middleware` and `Session Middleware` and they are responsible for processing and verifying the authentication callback's requests and checking session keys respectively.
 
