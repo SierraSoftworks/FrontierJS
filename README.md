@@ -19,11 +19,24 @@ var requiredOptions = {
 
 var extraOptions = {
 	store: new Frontier.MemoryStore(), // Default
-	sessionCookie: '_frontier' // Default
+	sessionCookie: '_frontier', // Default
+	sessionHeader: 'x-frontier' // Default
 };
 
 var myApp = new Frontier.Application(options);
 ```
+
+### Options
+ - **server** allows you to specify the web address of the authentication server you plan to be using for your users. If you have your own Frontier server, or a custom server which implements the Frontier API, you can specify it here.
+ - **id** is your application's unique identifier, you can view this on your application's management page within Frontier.
+ - **privatekey** is your application's secure private key, you can also find this on the application's management page and you should keep it secret if possible.
+ - **callback** is the address of the callback you provided when registering your application with Frontier. It is used to check the validity of an authentication request and you should ensure that it is correct.
+
+### Extra Options
+ - **store** is the caching store you wish to use, the default `Frontier.MemoryStore` is useful for debugging or basic applications but doesn't scale well horizontally, or with sparse requests - you should replace it with something like Redis.
+ - **sessionCookie** determines the cookie used by Frontier to store your user's authentication/session token. The default *_frontier* should suffice for most situations.
+ - **sessionHeader** is useful if you are providing an API and need a better way of authenticating requests than attempting to hack cookies into them. You can use the default `x-frontier` header to provide the user's session token and the session middleware will handle the rest.
+
 
 ## API Methods
 The Frontier API gives you a number of tools for managing your application's users - you can read the [documentation](http://auth.sierrasoftworks.com/api) for more information. This module provides a lightweight wrapper around the API with automatic response caching in line with the server's response *X-Expires* field.
