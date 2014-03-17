@@ -2,7 +2,7 @@ var Frontier = require('../'),
 	should = require('should');
 
 var app = new Frontier.Application({
-	server: 'http://auth.sierrasoftworks.com',
+	server: 'https://auth.sierrasoftworks.com',
 	id: 'frontierjs',
 	privatekey: 'a601411b2ab34d9a17eef155af28a7c3f59f1ff313efb5bd14758a252a3c0c4cce4fece046639091f9c1bb07f5ec8092652cf71881256ce57d79de0e4dbc73d4',
 	callback: 'https://sierrasoftworks.com/frontierjs'
