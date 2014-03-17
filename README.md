@@ -193,7 +193,9 @@ The authentication middleware allows you to participate in the authentication pr
 var io = require('socket.io').listen(80);
 var myApp = new Frontier.Application({ ... });
 
-io.set('authorization', myApp.io.session);
+io.configure(function() {
+	io.set('authorization', myApp.io.session);
+});
 
 io.sockets.on('connection', function(socket) {
 	var user = socket.handshake.user;
