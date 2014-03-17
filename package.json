@@ -12,7 +12,7 @@
     "lodash": "*",
     "guardhouse": "*",
     "superagent": "*",
-    "connect": "*",
+    "cookie": "*",
     "debug": "*"
   },
   "devDependencies": {
