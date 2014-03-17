@@ -132,7 +132,7 @@ RedisStore.prototype.remove = function(key, callback) {
 ```
 
 ## Express Middleware
-This module includes two express middlewares which are designed to be used together when implementing Frontier authentication in your application. They are the `Authentication Middleware` and `Session Middleware` and they are responsible for processing and verifying the authentication callback's requests and checking session keys respectively.
+This module includes two Express middlewares which are designed to be used together when implementing Frontier authentication in your application. They are the `Authentication Middleware` and `Session Middleware` and they are responsible for processing and verifying the authentication callback's requests and checking session keys respectively.
 
 ### Authentication Middleware
 The authentication middleware is designed to slot into the request sequence for your authentication route, it is responsible for validating requests to the authentication callback and setting the user's authentication cookie if everything is correct. If the request passes validation, this middleware will set the `req.authorization` property, allowing you to access the `user`, `sessionkey` and the session key's `expires` date.
@@ -174,5 +174,36 @@ app.get('/auth', myApp.express.authenticate, function(req, res) {
 app.get('/account', function(req, res) {
 	if(!req.user) return myApp.express.login(req, res);
 	return res.render('account', { user: req.user });
+});
+```
+
+## Socket.IO Middleware
+This module includes a socket.io middleware which allows you to easily authenticate and link sessions within your application by simply registering `app.io.session` or `app.io.authenticate` as socket.io's authentication handler. It supports both cookie and header based authentication and integrates tightly with Frontier.js' cache system to ensure that sessions are authenticated as quickly as possible.
+
+### Session Middleware
+The session middleware is responsible for verifying whether a provided session is still valid and, if it is, setting the `socket.handshake.user` property to the result of an `api.sessions.details` call. It is useful when you want to get user information for a globally accessible socket or are simply wanting to link a socket to a specific user.
+
+If you wish to perform some type of pre-connection authorization checks then you should rather look at using the *Authentication Middleware*.
+
+### Authentication Middleware
+The authentication middleware allows you to participate in the authentication process by providing a callback which is triggered if the session is valid, but before the socket is opened. You may then check the `handshakeData.user` to determine whether they should have access to the socket or not before calling the provided `callback` function. See the [Socket.IO Authorizing](https://github.com/LearnBoost/socket.io/wiki/Authorizing) documentation for more information.
+
+### Example
+```javascript
+var io = require('socket.io').listen(80);
+var myApp = new Frontier.Application({ ... });
+
+io.set('authorization', myApp.io.session);
+
+io.sockets.on('connection', function(socket) {
+	var user = socket.handshake.user;
+	socket.emit('ready');
+});
+
+io.of('/admin').authorization(myApp.io.authenticate(function(data, callback) {
+	if(!~data.user.tags.indexOf('admin')) return callback(null, false);
+	return callback(null, true);
+})).on('connection', function(socket) {
+	socket.emit('ready');
 });
 ```
