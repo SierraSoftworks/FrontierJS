@@ -86,7 +86,7 @@ myApp.api.sessions.close(sessionkey, function(err) {});
 You can use the details API to quickly get a small amount of information about a user, including their name, email address and date of birth. In most cases this should be enough information for your application, however if additional info is required you should store it locally.
 
 ```javascript
-myApp.api.details.get(username, function(err, details) {});
+myApp.api.details.get(query, function(err, details) {});
 ```
 
 ## Response Caching
