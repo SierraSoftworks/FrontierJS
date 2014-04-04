@@ -5,7 +5,8 @@ var app = new Frontier.Application({
 	server: 'https://auth.sierrasoftworks.com',
 	id: 'frontierjs',
 	privatekey: 'a601411b2ab34d9a17eef155af28a7c3f59f1ff313efb5bd14758a252a3c0c4cce4fece046639091f9c1bb07f5ec8092652cf71881256ce57d79de0e4dbc73d4',
-	callback: 'https://sierrasoftworks.com/frontierjs'
+	callback: 'https://sierrasoftworks.com/frontierjs',
+	store: new Frontier.NoOpStore()
 });
 
 var session = null;
@@ -117,6 +118,69 @@ describe('tags', function() {
 		app.api.tags.remove('test_runner', 'mocha', function(err, tags) {
 			should.not.exist(err);
 			tags.should.eql(['nodejs', 'frontierjs']);
+			done();
+		});
+	});
+});
+
+describe('permissions', function() {
+	this.timeout(5000);
+
+	it('assignment should return the new permissions', function(done) {
+		app.api.permissions.assign('test_runner', { access: true }, function(err, permissions) {
+			should.not.exist(err);
+			permissions.should.eql({access:true});
+			done();
+		});
+	});
+
+	it('should retrieve the user\s permissions', function(done) {
+		app.api.permissions.get('test_runner', function(err, permissions) {
+			should.not.exist(err);
+			permissions.should.eql({ access: true });
+			done();
+		});
+	});
+
+	it('grant should merge permissions correctly', function(done) {
+		app.api.permissions.grant('test_runner', { write: true }, function(err, permissions) {
+			should.not.exist(err);
+			permissions.should.eql({ access: true, write: true });
+			done();
+		});
+	});
+
+	it('revoke should merge permissions correctly', function(done) {
+		app.api.permissions.revoke('test_runner', { access: false }, function(err, permissions) {
+			should.not.exist(err);
+			permissions.should.eql({ access: false, write: true });
+			done();
+		});
+	});
+});
+
+describe('details', function() {
+	this.timeout(5000);
+
+	it('should return the details of a specific user', function(done) {
+		app.api.details.get('test_runner', function(err, details) {
+			should.not.exist(err);
+			should.exist(details);
+
+			details.should.have.ownProperty('fullname');
+			details.should.have.ownProperty('email');
+			details.should.have.ownProperty('avatar');
+			details.should.have.ownProperty('birthdate');
+			done();
+		});
+	});
+
+	it('should return the details of users matching tags', function(done) {
+		app.api.details.get('-admin', function(err, details) {
+			should.not.exist(err);
+			should.exist(details);
+
+			details.should.have.ownProperty('test_runner');
 			done();
 		});
 	});
