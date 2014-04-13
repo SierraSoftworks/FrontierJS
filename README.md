@@ -41,15 +41,56 @@ var myApp = new Frontier.Application(options);
 ## API Methods
 The Frontier API gives you a number of tools for managing your application's users - you can read the [documentation](http://auth.sierrasoftworks.com/api) for more information. This module provides a lightweight wrapper around the API with automatic response caching in line with the server's response *X-Expires* field.
 
+### Accounts
+The accounts API allows you to quickly retrieve all pertinent information relating to the specific user or users. It effectively includes the output of the Tags, Permissions and Details APIs, allowing you to access this information using a single request.
+
+```javascript
+myApp.api.account.get(username, function(err, account) {
+	/*
+	{
+		id: "username",
+		details: {
+			fullname: "User Name",
+			email: "user@name.com",
+			birthdate: "1993-02-14T00:00:00.000Z",
+			avatar: "https://www.gravatar.com/avatar/0000000000000000"
+		},
+		permissions: {},
+		tags: []
+	}
+	*/	
+});
+
+myApp.api.account.get(query, function(err, account) {
+	/*
+	{
+    	"user_id": {
+	        "id": "user_id",
+	        "details": {
+	            "fullname": "My Full Name",
+	            "email": "my_email@test.com",
+	            "birthdate": "1993-02-14T00:00:00.000Z",
+	            "avatar": "https://www.gravatar.com/avatar/0000000000000000"
+	        },
+	        "permissions": { },
+	        "tags": []
+	    }
+	}
+	*/	
+});
+```
+
 ### Login
 If you're implementing an application which is unable to redirect the user to the Frontier login page (the preferred method of authentication) then you can use the login API to acquire a session key for the user. Take note that this will **only** allow users who have previously authorized your application to login, other users will return a **404 Not Found** error (the same as for invalid usernames).
 
 ```javascript
 myApp.api.login(username, password, deviceName, function(err, response) {
-	response = {
+	/*
+	{
 		sessionkey: 'xxxxxxxxxxx',
 		expires: new Date(1234567890)
 	}
+	*/
 });
 ```
 
@@ -57,28 +98,98 @@ myApp.api.login(username, password, deviceName, function(err, response) {
 The permissions API allows you to easily access, assign, grant and revoke permissions for specific users - or groups of tagged users. The `query` parameter can either be a username or a tag query.
 
 ```javascript
-myApp.api.permissions.get(query, function(err, permissions) {});
-myApp.api.permissions.assign(query, permissions, function(err, latestPermissions) {});
-myApp.api.permissions.grant(query, permissions, function(err, latestPermissions) {});
-myApp.api.permissions.revoke(query, permissions, function(err, latestPermissions) {});
+myApp.api.permissions.get(username, function(err, permissions) {
+	/*{ }*/
+});
+
+myApp.api.permissions.assign(username, permissions, function(err, latestPermissions) {
+	/*{ }*/
+});
+
+myApp.api.permissions.grant(username, permissions, function(err, latestPermissions) {
+	/*{ }*/
+});
+
+myApp.api.permissions.revoke(username, permissions, function(err, latestPermissions) {
+	/*{ }*/
+});
+
+myApp.api.permissions.get(query, function(err, permissions) {
+	/*{ username1: {}, username2: {} }*/
+});
+
+myApp.api.permissions.assign(query, permissions, function(err, latestPermissions) {
+	/*{ username1: {}, username2: {} }*/
+});
+
+myApp.api.permissions.grant(query, permissions, function(err, latestPermissions) {
+	/*{ username1: {}, username2: {} }*/
+});
+
+myApp.api.permissions.revoke(query, permissions, function(err, latestPermissions) {
+	/*{ username1: {}, username2: {} }*/
+});
 ```
 
 ### Tags
 The tags API allows you to access, assign, add and remove tags from users to make managing them easier. Methods in this API accept both single tags and arrays of tags, and can be called on either a username or a tag query.
 
 ```javascript
-myApp.api.tags.get(query, function(err, tags) {});
-myApp.api.tags.assign(query, tags, function(err, tags) {});
-myApp.api.tags.add(query, tags, function(err, tags) {});
-myApp.api.tags.remove(query, tags, function(err, tags) {});
+myApp.api.tags.get(username, function(err, tags) {
+	/*[]*/
+});
+
+myApp.api.tags.assign(username, tags, function(err, tags) {
+	/*[]*/
+});
+
+myApp.api.tags.add(username, tags, function(err, tags) {
+	/*[]*/
+});
+
+myApp.api.tags.remove(username, tags, function(err, tags) {
+	/*[]*/
+});
+
+myApp.api.tags.get(query, function(err, tags) {
+	/*{ username1: [], username2: [] }*/
+});
+
+myApp.api.tags.assign(query, tags, function(err, tags) {
+	/*{ username1: [], username2: [] }*/
+});
+
+myApp.api.tags.add(query, tags, function(err, tags) {
+	/*{ username1: [], username2: [] }*/
+});
+
+myApp.api.tags.remove(query, tags, function(err, tags) {
+	/*{ username1: [], username2: [] }*/
+});
 ```
 
 ### Sessions
 The sessions API allows you to check the validity of a session key provided by a user, allowing your application to quickly determine the identify of a user without redirecting them to the Frontier authentication portal each time.
 
 ```javascript
-myApp.api.sessions.check(sessionkey, function(err, valid) {});
-myApp.api.sessions.details(sessionkey, function(err, details) {});
+myApp.api.sessions.check(sessionkey, function(err, valid) {
+	/*true*/
+});
+myApp.api.sessions.details(sessionkey, function(err, details) {
+	/*
+	{
+	    "id": ":user_id",
+	    "details": {
+	        "fullname": "User Name",
+	        "email": "user_id@test.com",
+	        "birthdate": "2014-01-12T16:40:53.143Z",
+	        "avatar": "https://secure.gravatar.com/avatar/0000000000000000"
+	    },
+	    "permissions": { },
+	    "tags": []
+	}
+	*/
+});
 myApp.api.sessions.close(sessionkey, function(err) {});
 ```
 
@@ -86,7 +197,29 @@ myApp.api.sessions.close(sessionkey, function(err) {});
 You can use the details API to quickly get a small amount of information about a user, including their name, email address and date of birth. In most cases this should be enough information for your application, however if additional info is required you should store it locally.
 
 ```javascript
-myApp.api.details.get(query, function(err, details) {});
+myApp.api.details.get(username, function(err, details) {
+	/*
+	{
+		"fullname": "My Full Name",
+	    "email": "my_email@test.com",
+	    "birthdate": "1993-02-14T00:00:00.000Z",
+	    "avatar": "https://www.gravatar.com/avatar/0000000000000000"
+	}
+	*/
+});
+
+myApp.api.details.get(query, function(err, details) {
+	/*
+	{
+		"user_id": {
+			"fullname": "My Full Name",
+		    "email": "my_email@test.com",
+		    "birthdate": "1993-02-14T00:00:00.000Z",
+		    "avatar": "https://www.gravatar.com/avatar/0000000000000000"
+		}
+	}
+	*/
+});
 ```
 
 ## Response Caching

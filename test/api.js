@@ -12,7 +12,7 @@ var app = new Frontier.Application({
 var session = null;
 
 describe('login', function() {
-	this.timeout(5000);
+	this.timeout(30000);
 	it('should respond with a 203 for an invalid username', function(done) {
 		app.api.login('invalidUsername', 'somePassword', 'Mocha Test', function(err, response) {
 			should.exist(err);
@@ -42,7 +42,7 @@ describe('login', function() {
 });
 
 describe('sessions', function() {
-	this.timeout(5000);
+	this.timeout(30000);
 	describe('check', function(done) {		
 		it('should respond with false for an invalid session key', function(done) {
 			app.api.session.check(session.substring(1) + 'a', function(err, valid) {
@@ -89,7 +89,7 @@ describe('sessions', function() {
 });
 
 describe('tags', function() {
-	this.timeout(5000);
+	this.timeout(30000);
 	it('assignment should return the new tags', function(done) {
 		app.api.tags.assign('test_runner', ['mocha', 'nodejs'], function(err, tags) {
 			should.not.exist(err);
@@ -124,7 +124,7 @@ describe('tags', function() {
 });
 
 describe('permissions', function() {
-	this.timeout(5000);
+	this.timeout(30000);
 
 	it('assignment should return the new permissions', function(done) {
 		app.api.permissions.assign('test_runner', { access: true }, function(err, permissions) {
@@ -159,8 +159,40 @@ describe('permissions', function() {
 	});
 });
 
+describe('accounts', function() {
+	this.timeout(30000);
+
+	it('should be able to retrieve the user\'s account', function(done) {
+		app.api.account.get('test_runner', function(err, account) {
+			should.not.exist(err);
+			should.exist(account);
+			account.should.have.ownProperty('id').and.equal('test_runner');
+			account.should.have.ownProperty('details');
+			account.should.have.ownProperty('permissions');
+			account.should.have.ownProperty('tags');
+
+			done();
+		});
+	});
+
+	it('should be able to retrieve the accounts of a number of users', function(done) {
+		app.api.account.get('-admin', function(err, account) {
+			should.not.exist(err);
+			should.exist(account);
+			account.should.have.ownProperty('test_runner');
+			account = account.test_runner;
+			account.should.have.ownProperty('id').and.equal('test_runner');
+			account.should.have.ownProperty('details');
+			account.should.have.ownProperty('permissions');
+			account.should.have.ownProperty('tags');
+
+			done();
+		});
+	});
+});
+
 describe('details', function() {
-	this.timeout(5000);
+	this.timeout(30000);
 
 	it('should return the details of a specific user', function(done) {
 		app.api.details.get('test_runner', function(err, details) {
@@ -181,6 +213,11 @@ describe('details', function() {
 			should.exist(details);
 
 			details.should.have.ownProperty('test_runner');
+			details = details.test_runner;
+			details.should.have.ownProperty('fullname');
+			details.should.have.ownProperty('email');
+			details.should.have.ownProperty('avatar');
+			details.should.have.ownProperty('birthdate');
 			done();
 		});
 	});
