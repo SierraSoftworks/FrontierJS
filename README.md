@@ -175,6 +175,11 @@ The sessions API allows you to check the validity of a session key provided by a
 myApp.api.sessions.check(sessionkey, function(err, valid) {
 	/*true*/
 });
+
+myApp.api.sessions.user(sessionkey, function(err, username) {
+	/*{ "id": "user_id" }*/
+});
+
 myApp.api.sessions.details(sessionkey, function(err, details) {
 	/*
 	{
@@ -190,6 +195,7 @@ myApp.api.sessions.details(sessionkey, function(err, details) {
 	}
 	*/
 });
+
 myApp.api.sessions.close(sessionkey, function(err) {});
 ```
 

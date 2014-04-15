@@ -61,6 +61,24 @@ describe('sessions', function() {
 		});
 	});
 
+	describe('user', function(done) {
+		it('should respond with null for an invalid session key', function(done) {
+			app.api.session.user(session.substring(1) + 'a', function(err, username) {
+				should.not.exist(err);
+				username.should.equal(null);
+				done();
+			});
+		});
+
+		it('should respond with the correct username for a valid session key', function(done) {
+			app.api.session.user(session, function(err, username) {
+				should.not.exist(err);
+				username.should.eql('test_runner');
+				done();
+			});
+		});
+	});
+
 	describe('details', function(done) {
 		it('should respond with the username, permissions and tags associated with a session', function(done) {
 			app.api.session.details(session, function(err, details) {
