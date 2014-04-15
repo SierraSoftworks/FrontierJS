@@ -65,7 +65,7 @@ describe('sessions', function() {
 		it('should respond with null for an invalid session key', function(done) {
 			app.api.session.user(session.substring(1) + 'a', function(err, username) {
 				should.not.exist(err);
-				username.should.equal(null);
+				should.not.exist(username);
 				done();
 			});
 		});
@@ -73,6 +73,7 @@ describe('sessions', function() {
 		it('should respond with the correct username for a valid session key', function(done) {
 			app.api.session.user(session, function(err, username) {
 				should.not.exist(err);
+				should.exist(username);
 				username.should.eql('test_runner');
 				done();
 			});
