@@ -333,7 +333,7 @@ var io = require('socket.io').listen(80);
 var myApp = new Frontier.Application({ ... });
 
 io.configure(function() {
-	io.set('authorization', myApp.io.session);
+	io.set('authorization', myApp.socket_io.session);
 });
 
 io.sockets.on('connection', function(socket) {
@@ -341,7 +341,7 @@ io.sockets.on('connection', function(socket) {
 	socket.emit('ready');
 });
 
-io.of('/admin').authorization(myApp.io.authenticate(function(data, callback) {
+io.of('/admin').authorization(myApp.socket_io.authenticate(function(data, callback) {
 	if(!~data.user.tags.indexOf('admin')) return callback(null, false);
 	return callback(null, true);
 })).on('connection', function(socket) {
