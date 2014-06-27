@@ -26,7 +26,7 @@ describe('login', function() {
 		app.api.login('test_runner', 'wrongPassword', 'Mocha Test', function(err, response) {
 			should.exist(err);
 			err.should.have.ownProperty('error').and.eql('Incorrect Password');
-			response.statusCode.should.eql(403);
+			response.statusCode.should.eql(401);
 			done();
 		});
 	});
