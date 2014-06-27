@@ -16,7 +16,7 @@ describe('login', function() {
 	it('should respond with a 203 for an invalid username', function(done) {
 		app.api.login('invalidUsername', 'somePassword', 'Mocha Test', function(err, response) {
 			should.exist(err);
-			err.should.have.ownProperty('error').and.eql('Invalid Username');
+			err.should.have.ownProperty('error').and.eql('User Not Found');
 			response.statusCode.should.eql(404);
 			done();
 		});
@@ -25,7 +25,7 @@ describe('login', function() {
 	it('should respond with a 204 for an invalid password', function(done) {
 		app.api.login('test_runner', 'wrongPassword', 'Mocha Test', function(err, response) {
 			should.exist(err);
-			err.should.have.ownProperty('error').and.eql('Invalid Password');
+			err.should.have.ownProperty('error').and.eql('Incorrect Password');
 			response.statusCode.should.eql(403);
 			done();
 		});
@@ -172,7 +172,7 @@ describe('permissions', function() {
 	it('revoke should merge permissions correctly', function(done) {
 		app.api.permissions.revoke('test_runner', { access: false }, function(err, permissions) {
 			should.not.exist(err);
-			permissions.should.eql({ access: false, write: true });
+			permissions.should.eql({ write: true });
 			done();
 		});
 	});
