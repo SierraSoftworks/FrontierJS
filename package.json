@@ -1,0 +1,44 @@
+{
+  "name": "frontier",
+  "version": "3.0.0",
+  "description": "The official Frontier client for Node.js",
+  "author": "Sierra Softworks",
+  "license": "MIT",
+  "homepage": "https://github.com/SierraSoftworks/FrontierJS",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/SierraSoftworks/FrontierJS.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SierraSoftworks/FrontierJS/issues"
+  },
+  "keywords": [
+    "frontier",
+    "auth",
+    "authentication",
+    "logon",
+    "login",
+    "permissions",
+    "register",
+    "federated"
+  ],
+
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+
+  "dependencies": {
+    "lodash": "*",
+    "async-q": "*",
+    "q": "1.x",
+    "functionality": "1.x",
+    "debug": "*",
+    "pkginfo": "*"
+  },
+
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*"
+  }
+}
