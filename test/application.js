@@ -1,5 +1,6 @@
 var Frontier = require('../');
-var should = require('should');
+var should = require('should'),
+	Q = require('q');
 
 describe('Application API', function() {
 	var frontier;
@@ -15,59 +16,49 @@ describe('Application API', function() {
 
 	describe('applications', function() {
 		describe('get', function() {
-			it('should return the list of applications available on the server', function(done) {
-				frontier.applications.get().then(function(apps) {
+			it('should return the list of applications available on the server', function() {
+				return frontier.applications.get().then(function(apps) {
 					should.exist(apps);
 					Array.isArray(apps).should.be.true;
-					return done();
-				}, done);
+				});
 			});
 		});
 	});
 
 	describe('application', function() {
 		describe('get', function() {
-			it('should get information about the current application', function(done) {
-				frontier.application.details().then(function(app) {
+			it('should get information about the current application', function() {
+				return frontier.application.details().then(function(app) {
 					should.exist(app);
-					app.id.should.eql('frontierjs');
-					return done();
-				}, done);
+					app.id.should.eql('test');
+				});
 			});
 
-			it('should get information about a specific application', function(done) {
-				frontier.application.details('frontierjs').then(function(app) {
+			it('should get information about a specific application', function() {
+				return frontier.application.details('test').then(function(app) {
 					should.exist(app);
-					app.id.should.eql('frontierjs');
-					return done();
-				}, done);
+					app.id.should.eql('test');
+				});
 			});
 		});
 
 		describe('modify', function() {
-			it('should allow modification of the application details', function(done) {
-				frontier.application.modify({
+			it('should allow modification of the application details', function() {
+				return frontier.application.modify({
 					logo: '/icon.svg',
-					website: 'https://github.com/sierrasoftworks/frontierjs'
+					website: 'https://github.com/sierrasoftworks/test'
 				}).then(function(app) {
 					should.exist(app);
-					app.id.should.eql('frontierjs');
-					return done();
-				}, function(err) {
-					if(err.error && err.error == 'Not Allowed') return done();
-					return done(err);
+					app.id.should.eql('test');
+					app.logo.should.eql('/icon.svg');
+					app.website.should.eql('https://github.com/sierrasoftworks/test');
 				});
 			});
 		});
 
 		describe('remove', function() {
-			it('should allow removal of the application', function(done) {
-				frontier.application.remove().then(function() {
-					return done();
-				}, function(err) {
-					if(err.error && err.error == 'Not Allowed') return done();
-					return done(err);
-				});
+			it('should allow removal of the application', function() {
+				return frontier.application.remove();
 			});
 		});
 	});

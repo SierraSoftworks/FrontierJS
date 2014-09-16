@@ -16,8 +16,8 @@ describe('Login API', function() {
 	describe('login', function() {
 		it('should return successfully with valid credentials', function(done) {
 			frontier.login({
-				username: "test_runner",
-				password: "test_runner"
+				username: "testuser",
+				password: "testuser"
 			}).then(function(session) {
 				should.exist(session);
 				session.session.should.have.length(128);
@@ -27,7 +27,7 @@ describe('Login API', function() {
 
 		it('should return an error for an invalid username', function(done) {
 			frontier.login({
-				username: "testrunner_invalidusername",
+				username: "testuser_invalidusername",
 				password: "wrongpassword"
 			}).then(function() {
 				return Q.reject(new Error('Expected an error response'));
@@ -39,7 +39,7 @@ describe('Login API', function() {
 
 		it('should return an error for an invalid password', function(done) {
 			frontier.login({
-				username: "test_runner",
+				username: "testuser",
 				password: "wrongpassword"
 			}).then(function() {
 				return Q.reject(new Error('Expected an error response'));

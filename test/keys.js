@@ -1,5 +1,6 @@
 var Frontier = require('../');
-var should = require('should');
+var should = require('should'),
+	Q = require('q');
 
 describe('Keys API', function() {
 	var frontier;
@@ -15,21 +16,17 @@ describe('Keys API', function() {
 
 	describe('keys', function() {
 		describe('get', function() {
-			it('should return the list of keys available for the application', function(done) {
-				frontier.keys.get().then(function(keys) {
+			it('should return the list of keys available for the application', function() {
+				return frontier.keys.get().then(function(keys) {
 					should.exist(keys);
 					Array.isArray(keys).should.be.true;
-					return done();
-				}, function(err) {
-					if(err.error && err.error == 'Not Allowed') return done();
-					return done(err);
 				});
 			});
 		});
 
 		describe('create', function() {
-			it('should allow new keys to be created', function(done) {
-				frontier.keys.create({
+			it('should allow new keys to be created', function() {
+				return frontier.keys.create({
 					name: 'Creation Test',
 					publickey: 'testnew',
 					permissions: {}
@@ -37,12 +34,8 @@ describe('Keys API', function() {
 					should.exist(key);
 					key.name.should.eql('Creation Test');
 					key.publickey.should.eql('testnew');
-					key.permissions.should.eql(false);
+					key.permissions.should.eql({});
 					key.privatekey.should.have.length(128);
-					return done();
-				}, function(err) {
-					if(err.error && err.error == 'Not Allowed') return done();
-					return done(err);
 				});
 			});
 		});
@@ -50,59 +43,120 @@ describe('Keys API', function() {
 
 	describe('key', function() {
 		describe('get', function() {
-			it('should retrieve information about the current key', function(done) {
-				frontier.key.get().then(function(key) {
+			it('should retrieve information about the current key', function() {
+				return frontier.key.get().then(function(key) {
 					should.exist(key);
-					key.publickey.should.eql('testing');
-					return done();
-				}, function(err) {
-					if(err.error && err.error == 'Not Allowed') return done();
-					return done(err);
+					key.should.have.ownProperty('name');
+					key.should.have.ownProperty('privatekey');
+					key.should.have.ownProperty('permissions');
 				});
 			});
 
-			it('should retrieve information about a specific', function(done) {
-				frontier.key.get('testing').then(function(key) {
+			it('should retrieve information about a specific key', function() {
+				return frontier.key.get('testkey').then(function(key) {
 					should.exist(key);
-					key.publickey.should.eql('testing');
-					return done();
+					key.should.have.ownProperty('name');
+					key.should.have.ownProperty('privatekey');
+					key.should.have.ownProperty('permissions');
+				});
+			});
+
+			it('should return an error for a missing key', function() {
+				return frontier.key.reset('missingkey').then(function() {
+					return Q.reject(new Error("Expected an error response for a missing key"));
 				}, function(err) {
-					if(err.error && err.error == 'Not Allowed') return done();
-					return done(err);
+					should.exist(err);
+					err.error.should.eql('Key Not Found');
+					return Q.resolve();
 				});
 			});
 		});
 
 		describe('modify', function() {
-			it('should modify information about the current key', function(done) {
-				frontier.key.modify({ name: 'Unit Tests' }).then(function(key) {
+			it('should not modify information about the admin key', function() {
+				return frontier.key.modify({ name: 'Unit Tests' }).then(function(key) {
 					should.exist(key);
-					key.publickey.should.eql('testing');
-					return done();
-				}, function(err) {
-					if(err.error && err.error == 'Not Allowed') return done();
-					return done(err);
+					key.should.have.ownProperty('name').and.eql('Unit Tests');
+					key.should.have.ownProperty('privatekey');
+					key.should.have.ownProperty('permissions');
 				});
 			});
 
-			it('should modify information about a specific', function(done) {
-				frontier.key.modify('testing', { name: 'Unit Tests' }).then(function(key) {
+			it('should modify information about a specific key', function() {
+				return frontier.key.modify('testkey', { name: 'Unit Tests' }).then(function(key) {
 					should.exist(key);
-					key.publickey.should.eql('testing');
-					return done();
+					key.should.have.ownProperty('name').and.eql('Unit Tests');
+					key.should.have.ownProperty('privatekey');
+					key.should.have.ownProperty('permissions');
+				});
+			});
+
+			it('should return an error for a missing key', function() {
+				return frontier.key.reset('missingkey').then(function() {
+					return Q.reject(new Error("Expected an error response for a missing key"));
 				}, function(err) {
-					if(err.error && err.error == 'Not Allowed') return done();
-					return done(err);
+					should.exist(err);
+					err.error.should.eql('Key Not Found');
+					return Q.resolve();
 				});
 			});
 		});
 
 		describe('reset', function() {
+			it('should allow resetting of the current key', function() {
+				return frontier.key.reset().then(function(key) {
+					should.exist(key);
+					key.should.have.ownProperty('name');
+					key.should.have.ownProperty('privatekey');
+					key.should.have.ownProperty('permissions');
+				});
+			});
 
+			it('should allow resetting of a specific key', function() {
+				return frontier.key.reset('testkey').then(function(key) {
+					should.exist(key);
+					key.should.have.ownProperty('name');
+					key.should.have.ownProperty('privatekey');
+					key.should.have.ownProperty('permissions');
+				});
+			});
+
+			it('should return an error for a missing key', function() {
+				return frontier.key.reset('missingkey').then(function() {
+					return Q.reject(new Error("Expected an error response for a missing key"));
+				}, function(err) {
+					should.exist(err);
+					err.error.should.eql('Key Not Found');
+					return Q.resolve();
+				});
+			});
 		});
 
 		describe('remove', function() {
+			it('should not allow removal of the current key', function() {
+				(function() {
+					return frontier.key.remove();
+				}).should.throw();
+			});
 
+			it('should allow removal of a specific key', function() {
+				return frontier.key.remove('testkey').then(function(key) {
+					should.exist(key);
+					key.should.have.ownProperty('name');
+					key.should.have.ownProperty('privatekey');
+					key.should.have.ownProperty('permissions');
+				});
+			});
+
+			it('should return an error for a missing key', function() {
+				return frontier.key.reset('missingkey').then(function() {
+					return Q.reject(new Error("Expected an error response for a missing key"));
+				}, function(err) {
+					should.exist(err);
+					err.error.should.eql('Key Not Found');
+					return Q.resolve();
+				});
+			});
 		});
 	});
 });
