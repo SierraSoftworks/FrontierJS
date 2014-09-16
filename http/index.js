@@ -65,9 +65,10 @@ APIClient.prototype.request = fn.first(function() {
 	};
 
 	var hash = this.secure && new utils.hash(crypto.createHash('sha512'))
-		.update(this.context.frontier.privatekey)
-		.update(time.toString())
-		.update(this.path);
+		.update(this.context.frontier.privatekey.toLowerCase()).update(':')
+		.update(time.toString()).update(':')
+		.update(this.method.toUpperCase()).update(':')
+		.update(this.path.toLowerCase()).update(':');
 
 	if(this.data) {
 		options.headers['Content-Type'] = 'application/json';
@@ -86,11 +87,9 @@ APIClient.prototype.request = fn.first(function() {
 
 		var data = "";
 		var hash = this.secure && new utils.hash(crypto.createHash('sha512'))
-			.update(this.context.frontier.privatekey)
-			.update(expires)
-			.update(time.toString())
-			.update(options.headers['X-Hash'])
-			.update(this.path);
+			.update(this.context.frontier.privatekey.toLowerCase()).update(':')
+			.update(options.headers['X-Hash']).update(':')
+			.update(expires).update(':');
 
 		res.on('data', (function(chunk) {
 			this.secure && hash.update(chunk);
