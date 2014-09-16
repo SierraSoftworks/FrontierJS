@@ -110,8 +110,6 @@ APIClient.prototype.request = fn.first(function() {
 			var actualHash = this.secure && hash.digest('hex');
 			if(this.secure && actualHash != expectedHash)
 				return this.deferred.reject(new Error('The signing token returned by the server did not match the expected value.'));
-			if(this.secure && parseInt(expires) < new Date().getTime())
-				return this.deferred.reject(new Error("The server's response has already expired, please check your system clock to ensure it is accurate."));
 
 			return this.deferred.resolve(res.body);
 		}).bind(this));
