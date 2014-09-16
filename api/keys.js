@@ -28,7 +28,7 @@ module.exports = function(frontier) {
 		get: fn.first(utils.fn.promises.first).on(fn.opt(Function), function(callback) {
 			this.addCallback(callback);
 
-			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/key/:token', null));
+			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/key', null));
 		}).on(String, fn.opt(Function), function(token, callback) {
 			this.addCallback(callback);
 
@@ -38,7 +38,7 @@ module.exports = function(frontier) {
 		modify: fn.first(utils.fn.promises.first).on({ name: fn.opt(String), permissions: fn.opt(String) }, fn.opt(Function), function(changes, callback) {
 			this.addCallback(callback);
 
-			this.pipePromise(frontier.client.request(true, 'PUT', '/api/:publickey/key/:token', changes));
+			this.pipePromise(frontier.client.request(true, 'PUT', '/api/:publickey/key', changes));
 		}).on(String, { name: fn.opt(String), permissions: fn.opt(String) }, fn.opt(Function), function(token, changes, callback) {
 			this.addCallback(callback);
 
@@ -48,18 +48,14 @@ module.exports = function(frontier) {
 		reset: fn.first(utils.fn.promises.first).on(fn.opt(Function), function(callback) {
 			this.addCallback(callback);
 
-			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/key/:token/reset', null));
+			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/key/reset', null));
 		}).on(String, fn.opt(Function), function(token, callback) {
 			this.addCallback(callback);
 
 			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/key/:token/reset', null, { token: token }));
 		}).then(utils.fn.promises.then).compile(),
 		
-		remove: fn.first(utils.fn.promises.first).on(fn.opt(Function), function(callback) {
-			this.addCallback(callback);
-
-			this.pipePromise(frontier.client.request(true, 'DELETE', '/api/:publickey/key/:token', null));
-		}).on(String, fn.opt(Function), function(token, callback) {
+		remove: fn.first(utils.fn.promises.first).on(String, fn.opt(Function), function(token, callback) {
 			this.addCallback(callback);
 
 			this.pipePromise(frontier.client.request(true, 'DELETE', '/api/:publickey/key/:token', null, { token: token }));
