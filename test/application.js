@@ -5,7 +5,7 @@ describe('Application API', function() {
 	var frontier;
 
 	before(function() {
-		frontier = new Frontier('https://frontierjs.testing:cc52d5593e1beeaec7576b05ec0a366fe7787f10c8a87050de00ce6f29a848855797df8c4b249ef4c86e6a2d78061b1de4d12c2bd13d366f5985da806d2a89a8@auth.sierrasoftworks.com/');
+		frontier = new Frontier(require('./config').dsn);
 	});
 
 	it('should be available through the Frontier object', function() {
