@@ -10,7 +10,7 @@ module.exports = function(frontier) {
 		get: fn.first(utils.fn.promises.first).on(fn.opt(Function), function(callback) {
 			this.addCallback(callback);
 
-			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/keys'));
+			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/keys').then(frontier.client.toBody));
 		}).then(utils.fn.promises.then).compile(),
 		
 		create: fn.first(utils.fn.promises.first).on({
@@ -20,7 +20,7 @@ module.exports = function(frontier) {
 		}, fn.opt(Function), function(token, callback) {
 			this.addCallback(callback);
 
-			this.pipePromise(frontier.client.request(true, 'POST', '/api/:publickey/keys', token));
+			this.pipePromise(frontier.client.request(true, 'POST', '/api/:publickey/keys', token).then(frontier.client.toBody));
 		}).then(utils.fn.promises.then).compile()
 	};
 
@@ -28,37 +28,37 @@ module.exports = function(frontier) {
 		get: fn.first(utils.fn.promises.first).on(fn.opt(Function), function(callback) {
 			this.addCallback(callback);
 
-			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/key', null));
+			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/key', null).then(frontier.client.toBody));
 		}).on(String, fn.opt(Function), function(token, callback) {
 			this.addCallback(callback);
 
-			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/key/:token', null, { token: token }));
+			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/key/:token', null, { token: token }).then(frontier.client.toBody));
 		}).then(utils.fn.promises.then).compile(),
 		
 		modify: fn.first(utils.fn.promises.first).on({ name: fn.opt(String), permissions: fn.opt(String) }, fn.opt(Function), function(changes, callback) {
 			this.addCallback(callback);
 
-			this.pipePromise(frontier.client.request(true, 'PUT', '/api/:publickey/key', changes));
+			this.pipePromise(frontier.client.request(true, 'PUT', '/api/:publickey/key', changes).then(frontier.client.toBody));
 		}).on(String, { name: fn.opt(String), permissions: fn.opt(String) }, fn.opt(Function), function(token, changes, callback) {
 			this.addCallback(callback);
 
-			this.pipePromise(frontier.client.request(true, 'PUT', '/api/:publickey/key/:token', changes, { token: token }));
+			this.pipePromise(frontier.client.request(true, 'PUT', '/api/:publickey/key/:token', changes, { token: token }).then(frontier.client.toBody));
 		}).then(utils.fn.promises.then).compile(),
 		
 		reset: fn.first(utils.fn.promises.first).on(fn.opt(Function), function(callback) {
 			this.addCallback(callback);
 
-			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/key/reset', null));
+			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/key/reset', null).then(frontier.client.toBody));
 		}).on(String, fn.opt(Function), function(token, callback) {
 			this.addCallback(callback);
 
-			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/key/:token/reset', null, { token: token }));
+			this.pipePromise(frontier.client.request(true, 'GET', '/api/:publickey/key/:token/reset', null, { token: token }).then(frontier.client.toBody));
 		}).then(utils.fn.promises.then).compile(),
 		
 		remove: fn.first(utils.fn.promises.first).on(String, fn.opt(Function), function(token, callback) {
 			this.addCallback(callback);
 
-			this.pipePromise(frontier.client.request(true, 'DELETE', '/api/:publickey/key/:token', null, { token: token }));
+			this.pipePromise(frontier.client.request(true, 'DELETE', '/api/:publickey/key/:token', null, { token: token }).then(frontier.client.toBody));
 		}).then(utils.fn.promises.then).compile()
 	};
 };

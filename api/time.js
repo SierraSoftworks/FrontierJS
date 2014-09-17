@@ -6,9 +6,9 @@ var _ = require('lodash'),
 	fn = require('functionality');
 
 module.exports = function(frontier) {
-	frontier.login = fn.first(utils.fn.promises.first).on({ username: String, password: String }, fn.opt(Function), function(user, callback) {
+	frontier.time = fn.first(utils.fn.promises.first).on(fn.opt(Function), function(callback) {
 		this.addCallback(callback);
 
-		this.pipePromise(frontier.client.request(true, 'POST', '/api/:publickey/login', user).then(frontier.client.toBody));
+		this.pipePromise(frontier.client.request('GET', '/api/server/time').then(frontier.client.toBody));
 	}).then(utils.fn.promises.then).compile();
 };
