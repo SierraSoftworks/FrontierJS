@@ -14,9 +14,25 @@ module.exports = APIClient;
 function APIClient(frontier, client) {
 	this.frontier = frontier;
 	this.client = client;
+	this.timeOffset = null;
 }
 
 util.inherits(APIClient, EventEmitter);
+
+APIClient.prototype.prepare = function() {
+	if(this.timeOffset !== null) return Q();
+	return this.request('GET', '/api/server/time').then((function(time) {
+		this.timeOffset = time;
+		return Q();
+	}).bind(this), function(err) {
+		console.warn("Failed to retrieve remote server time offset, disable by setting frontier.client.timeOffset = false");
+		return Q();
+	});
+};
+
+APIClient.prototype.toBody = function(res) {
+	return Q(res.body);
+};
 
 APIClient.prototype.request = fn.first(function() {
 	this.deferred = Q.defer();
@@ -51,7 +67,7 @@ APIClient.prototype.request = fn.first(function() {
 	this.data = data && JSON.stringify(data);
 	this.secure = secure;
 }).then(function() {
-	var time = new Date().getTime();
+	var time = new Date().getTime() + (this.context.timeOffset || 0);
 	var server = url.parse(this.context.frontier.server);
 	var options = {
 		hostname: server.hostname,
@@ -59,7 +75,6 @@ APIClient.prototype.request = fn.first(function() {
 		path: this.path,
 		method: this.method,
 		headers: {
-			'X-Time': time,
 			'User-Agent': utils.useragent()
 		}
 	};
@@ -75,7 +90,10 @@ APIClient.prototype.request = fn.first(function() {
 		this.secure && hash.update(this.data);
 	}
 
-	if(this.secure) options.headers['X-Hash'] = hash.digest('hex');
+	if(this.secure) {
+		options.headers['X-Time'] = time;
+		options.headers['X-Hash'] = hash.digest('hex');
+	}
 
 	debug(options);
 
@@ -110,7 +128,7 @@ APIClient.prototype.request = fn.first(function() {
 			if(this.secure && actualHash != expectedHash)
 				return this.deferred.reject(new Error('The signing token returned by the server did not match the expected value.'));
 
-			return this.deferred.resolve(res.body);
+			return this.deferred.resolve(res);
 		}).bind(this));
 	}).bind(this));
 
