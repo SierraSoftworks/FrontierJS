@@ -1,5 +1,3 @@
-var should = require('should');
-
 var Cache = require('../cache');
 
 describe('cache', function() {
@@ -28,7 +26,8 @@ describe('cache', function() {
 
 		cache.set('a', 1, 10, function(err) {
 			should.not.exist(err);
-			store.data.should.have.ownProperty('a').and.eql({ value: 1, expires: 10 });
+			store.data.should.have.ownProperty('a');
+			store.data.a.should.be.like({ value: 1, expires: 10 });
 
 			done();
 		});
@@ -39,8 +38,10 @@ describe('cache', function() {
 
 		cache.setMap({ x: 1, y: 2 }, 10, function(err) {
 			should.not.exist(err);
-			store.data.should.have.ownProperty('x').and.eql({ value: 1, expires: 10 });
-			store.data.should.have.ownProperty('y').and.eql({ value: 2, expires: 10 });
+			store.data.should.have.ownProperty('x');
+			store.data.x.should.be.like({ value: 1, expires: 10 });
+			store.data.should.have.ownProperty('y');
+			store.data.y.should.be.like({ value: 2, expires: 10 });
 
 			done();
 		});
@@ -51,8 +52,10 @@ describe('cache', function() {
 
 		cache.setArrayID([{ id: 'z', val: 1 }, { id: 'h', val: 2 }], 10, function(err) {
 			should.not.exist(err);
-			store.data.should.have.ownProperty('z').and.eql({ value: { id: 'z', val: 1 }, expires: 10 });
-			store.data.should.have.ownProperty('h').and.eql({ value: { id: 'h', val: 2 }, expires: 10 });
+			store.data.should.have.ownProperty('z');
+			store.data.z.should.be.like({ value: { id: 'z', val: 1 }, expires: 10 });
+			store.data.should.have.ownProperty('h');
+			store.data.h.should.be.like({ value: { id: 'h', val: 2 }, expires: 10 });
 
 			done();
 		});
@@ -63,13 +66,15 @@ describe('cache', function() {
 
 		cache.setArrayID([{ id: 'x', val: 2 }, { id: 'y', val: 3 }], 10, function(err) {
 			should.not.exist(err);
-			store.data.should.have.ownProperty('pf:x').and.eql({ value: { id: 'x', val: 2 }, expires: 10 });
-			store.data.should.have.ownProperty('pf:y').and.eql({ value: { id: 'y', val: 3 }, expires: 10 });
+			store.data.should.have.ownProperty('pf:x');
+			store.data['pf:x'].should.be.like({ value: { id: 'x', val: 2 }, expires: 10 });
+			store.data.should.have.ownProperty('pf:y');
+			store.data['pf:y'].should.be.like({ value: { id: 'y', val: 3 }, expires: 10 });
 
 			cache.get(['x', 'y'], function(err, data) {
 				should.not.exist(err);
-				data[0].should.eql({ id: 'x', val: 2 });
-				data[1].should.eql({ id: 'y', val: 3 })
+				data[0].should.be.like({ id: 'x', val: 2 });
+				data[1].should.be.like({ id: 'y', val: 3 })
 			});
 
 			done();

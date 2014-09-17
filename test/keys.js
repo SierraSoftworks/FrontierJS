@@ -1,12 +1,8 @@
-var Frontier = require('../');
-var should = require('should'),
-	Q = require('q');
-
 describe('Keys API', function() {
 	var frontier;
 
 	before(function() {
-		frontier = new Frontier(require('./config').dsn);
+		frontier = new Frontier(dsn);
 	});
 
 	it('should be available through the Frontier object', function() {
@@ -76,8 +72,10 @@ describe('Keys API', function() {
 			it('should not modify information about the admin key', function() {
 				return frontier.key.modify({ name: 'Unit Tests' }).then(function(key) {
 					should.exist(key);
-					key.should.have.ownProperty('name').and.eql('Unit Tests');
+					key.should.have.ownProperty('name');
+					key.name.should.equal('Unit Tests');
 					key.should.have.ownProperty('privatekey');
+					key.privatekey.should.be.a('string').and.have.property('length', 128);
 					key.should.have.ownProperty('permissions');
 				});
 			});
@@ -85,8 +83,10 @@ describe('Keys API', function() {
 			it('should modify information about a specific key', function() {
 				return frontier.key.modify('testkey', { name: 'Unit Tests' }).then(function(key) {
 					should.exist(key);
-					key.should.have.ownProperty('name').and.eql('Unit Tests');
+					key.should.have.ownProperty('name');
+					key.name.should.eql('Unit Tests');
 					key.should.have.ownProperty('privatekey');
+					key.privatekey.should.be.a('string').and.have.property('length', 128);
 					key.should.have.ownProperty('permissions');
 				});
 			});

@@ -1,12 +1,8 @@
-var Frontier = require('../');
-var should = require('should'),
-	Q = require('q');
-
 describe('Application API', function() {
 	var frontier;
 
 	before(function() {
-		frontier = new Frontier(require('./config').dsn);
+		frontier = new Frontier(dsn);
 	});
 
 	it('should be available through the Frontier object', function() {

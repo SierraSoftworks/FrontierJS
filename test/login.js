@@ -1,12 +1,8 @@
-var Frontier = require('../');
-var Q = require('q');
-var should = require('should');
-
 describe('Login API', function() {
 	var frontier;
 
 	before(function() {
-		frontier = new Frontier(require('./config').dsn);
+		frontier = new Frontier(dsn);
 	});
 
 	it('should be available through the Frontier object', function() {
@@ -14,19 +10,18 @@ describe('Login API', function() {
 	});
 
 	describe('login', function() {
-		it('should return successfully with valid credentials', function(done) {
-			frontier.login({
+		it('should return successfully with valid credentials', function() {
+			return frontier.login({
 				username: "testuser",
 				password: "testuser"
 			}).then(function(session) {
 				should.exist(session);
 				session.session.should.have.length(128);
-				Q();
-			}).then(function() { done(); }, done);
+			});
 		});
 
-		it('should return an error for an invalid username', function(done) {
-			frontier.login({
+		it('should return an error for an invalid username', function() {
+			return frontier.login({
 				username: "testuser_invalidusername",
 				password: "wrongpassword"
 			}).then(function() {
@@ -34,11 +29,11 @@ describe('Login API', function() {
 			}, function(err) {
 				err.error.should.eql('User Not Found');
 				return Q();
-			}).then(function() { done(); }, done);
+			});
 		});
 
-		it('should return an error for an invalid password', function(done) {
-			frontier.login({
+		it('should return an error for an invalid password', function() {
+			return frontier.login({
 				username: "testuser",
 				password: "wrongpassword"
 			}).then(function() {
@@ -46,7 +41,7 @@ describe('Login API', function() {
 			}, function(err) {
 				err.error.should.eql('Incorrect Password');
 				return Q();
-			}).then(function() { done(); }, done);
+			});
 		});
 	});
 });
