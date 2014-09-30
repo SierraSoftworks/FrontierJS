@@ -1,18 +1,20 @@
+var Q = require('q');
+
 module.exports = MyStore;
 
 function MyStore() {}
 
-MyStore.prototype.set = function(objects, expires, done) {
+MyStore.prototype.set = function(objects, expires) {
 	/**
 	 * Stores objects in the store, @objects is in the form [{ key: String, value: Object }]
 	 * and should expire after @expires milliseconds. Call @done() when you're finished setting
 	 * values, or @done(err) if you encounter a problem.
 	 */
 
-	 done(new Error("Method not implemented"));
+	 Q.reject(new Error("Method not implemented"));
 };
 
-MyStore.prototype.get = function(keys, done) {
+MyStore.prototype.get = function(keys) {
 	/**
 	 * Retrieves objects from the store, should call @done(null, [value1, value2]) where
 	 * values correspond to the @keys index of the key that retrieved that value.
@@ -21,5 +23,5 @@ MyStore.prototype.get = function(keys, done) {
 	 * Call @done(err) if you encounter a problem.
 	 */
 
-	 done(new Error("Method not implemented"));
+	 Q.reject(new Error("Method not implemented"));
 };

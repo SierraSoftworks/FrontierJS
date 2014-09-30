@@ -29,13 +29,14 @@ function Frontier() {
 
 		this.context.callback = options.callback;
 
-		this.context.store = options.store || new Cache.MemoryStore();
+		this.context.store = options.store;
 		this.context.sessionCookie = options.sessionCookie || '_frontier';
 		this.context.sessionHeader = options.sessionHeader || 'x-frontier';
 	}).execute(this, arguments);
 
 	debug('Created %s client', this.protocol);
 
+	this.store = this.store || new Cache.MemoryStore();
 	this.client = new Http(this, require(this.protocol));
 	require('./api')(this);
 }

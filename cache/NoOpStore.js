@@ -1,20 +1,21 @@
-var _ = require('lodash');
+var _ = require('lodash'),
+	Q = require('q');
 
 module.exports = NoOpStore;
 
 function NoOpStore() {}
 
-NoOpStore.prototype.set = function(objects, expires, done) {
+NoOpStore.prototype.set = function(objects, expires) {
 	/**
 	 * Stores objects in the store, @objects is in the form [{ key: String, value: Object }]
 	 * and should expire after @expires milliseconds. Call @done() when you're finished setting
 	 * values, or @done(err) if you encounter a problem.
 	 */
 
-	 done();
+	 return Q();
 };
 
-NoOpStore.prototype.get = function(keys, done) {
+NoOpStore.prototype.get = function(keys) {
 	/**
 	 * Retrieves objects from the store, should call @done(null, [value1, value2]) where
 	 * values correspond to the @keys index of the key that retrieved that value.
@@ -23,5 +24,5 @@ NoOpStore.prototype.get = function(keys, done) {
 	 * Call @done(err) if you encounter a problem.
 	 */
 
-	 done(null, _.map(keys, function() { return null; }));
+	 return Q(_.map(keys, function() { return null; }));
 };

@@ -1,4 +1,5 @@
-var _ = require('lodash');
+var _ = require('lodash'),
+	Q = require('q');
 
 module.exports = MemoryStore;
 
@@ -6,7 +7,7 @@ function MemoryStore() {
 	this.data = {};
 }
 
-MemoryStore.prototype.set = function(objects, expires, done) {
+MemoryStore.prototype.set = function(objects, expires) {
 	/**
 	 * Stores objects in the store, @objects is in the form [{ key: String, value: Object }]
 	 * and should expire after @expires milliseconds. Call @done() when you're finished setting
@@ -17,10 +18,10 @@ MemoryStore.prototype.set = function(objects, expires, done) {
 	 	this.data[obj.key] = { val: obj.value, exp: new Date().getTime() + expires };
 	 }, this);
 
-	 done();
+	 return Q();
 };
 
-MemoryStore.prototype.get = function(keys, done) {
+MemoryStore.prototype.get = function(keys) {
 	/**
 	 * Retrieves objects from the store, should call @done(null, [value1, value2]) where
 	 * values correspond to the @keys index of the key that retrieved that value.
@@ -30,7 +31,7 @@ MemoryStore.prototype.get = function(keys, done) {
 	 */
 
 	 var now = new Date().getTime();
-	 done(null, _.map(keys, function(key) {
+	 return Q(_.map(keys, function(key) {
 	 	var obj = this.data[key];
 	 	if(obj && obj.expires > now) return obj.val;
 	 	if(obj) delete this.data[key];
